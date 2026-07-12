@@ -1,0 +1,13 @@
+# Build output
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+
+# Release artifacts + cached BepInEx download are produced locally, not committed
+# (the bundle contains the game's proprietary DLLs and third-party BepInEx).
+dist/
+
+# Any game DLLs copied in locally for reference/patching
+Assembly-CSharp*.dll
+StreamLinked*.dll

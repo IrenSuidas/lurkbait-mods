@@ -1,0 +1,37 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoWarn>$(NoWarn);CS1701;CS1702;NU1701;MSB3277;CS0649</NoWarn>
+    <GameManagedDir Condition="'$(GameManagedDir)' == ''">
+      C:\Program Files (x86)\Steam\steamapps\common\LurkBait Twitch Fishing\LurkBait Twitch Fishing_Data\Managed
+    </GameManagedDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>$(GameManagedDir)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(GameManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="CheckGameManagedDir" BeforeTargets="ResolveAssemblyReferences">
+    <Error
+      Condition="!Exists('$(GameManagedDir)\Assembly-CSharp.dll')"
+      Text="Game assemblies not found at GameManagedDir='$(GameManagedDir)'. Pass -p:GameManagedDir=... pointing at your LurkBait ...\Managed folder."
+    />
+  </Target>
+</Project>

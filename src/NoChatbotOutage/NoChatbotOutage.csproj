@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>LurkBait.NoChatbotOutage</AssemblyName>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+</Project>

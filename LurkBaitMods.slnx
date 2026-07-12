@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/NoChatbotOutage/NoChatbotOutage.csproj" />
+    <Project Path="src/RemoteControl/RemoteControl.csproj" />
+    <Project Path="src/StableUserIds/StableUserIds.csproj" />
+  </Folder>
+</Solution>
