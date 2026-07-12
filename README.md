@@ -3,6 +3,19 @@
 Three small BepInEx plugins for LurkBait Twitch Fishing.
 They're independent, so install any combination. None of them touch the game's own files, BepInEx just loads them at startup. Delete a plugin's DLL to turn it off.
 
+## Contents
+
+- [What each plugin does](#what-each-plugin-does)
+  - [No Chatbot Outage](#no-chatbot-outage)
+  - [Stable User IDs](#stable-user-ids)
+  - [Remote Control](#remote-control)
+- [Install](#install)
+- [Existing data & the Twitch limitation](#existing-data--the-twitch-limitation)
+- [Remote Control endpoints](#remote-control-endpoints)
+  - [Streamer.bot example](#streamerbot-example)
+- [Building](#building)
+- [Checksums](#checksums)
+
 ## What each plugin does
 
 ### No Chatbot Outage
