@@ -5,6 +5,8 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/src/">
+    <Project Path="src/AchievementUnlocker/AchievementUnlocker.csproj" />
+    <Project Path="src/NegativeCatches/NegativeCatches.csproj" />
     <Project Path="src/NoChatbotOutage/NoChatbotOutage.csproj" />
     <Project Path="src/RemoteControl/RemoteControl.csproj" />
     <Project Path="src/StableUserIds/StableUserIds.csproj" />

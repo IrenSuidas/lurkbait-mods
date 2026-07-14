@@ -1,6 +1,6 @@
 # LurkBait Twitch Fishing - Mods
 
-Three small BepInEx plugins for LurkBait Twitch Fishing.
+Five small BepInEx plugins for LurkBait Twitch Fishing.
 They're independent, so install any combination. None of them touch the game's own files, BepInEx just loads them at startup. Delete a plugin's DLL to turn it off.
 
 ## Contents
@@ -9,6 +9,8 @@ They're independent, so install any combination. None of them touch the game's o
   - [No Chatbot Outage](#no-chatbot-outage)
   - [Stable User IDs](#stable-user-ids)
   - [Remote Control](#remote-control)
+  - [Negative Catches](#negative-catches)
+  - [Achievement Unlocker](#achievement-unlocker)
 - [Install](#install)
 - [Existing data & the Twitch limitation](#existing-data--the-twitch-limitation)
 - [Remote Control endpoints](#remote-control-endpoints)
@@ -23,7 +25,7 @@ They're independent, so install any combination. None of them touch the game's o
 - It skips only that one popup. Any other announcement still shows normally.
 
 ### Stable User IDs
-Keeps a viewer's gold, points and casts when they change their Twitch username, by
+Keeps a viewer's gold and casts when they change their Twitch username, by
 tracking their stable numeric Twitch id instead of the name. What it does, in order:
 
 - When a viewer fishes, it looks up their Twitch id and saves an id to username map (`StableUserIds.map`, next to your save). It only records people who actually fish.
@@ -42,6 +44,26 @@ Adds a local HTTP endpoint (127.0.0.1 only) so tools like Streamer.bot or SAMMI 
 - Applies each change on the game's main thread and can show an in-game toast.
 
 Endpoints and setup are further down.
+
+### Negative Catches
+Lets a custom catch have a negative value, so landing it takes gold from the viewer instead of giving it. What it does:
+
+- Unblocks negative values in the custom catch editor (down to a floor you set, default -1000), which the game normally clamps up to 1.
+- Gives negative catches a real rarity by size, so a -300 is tiered like a +300 instead of everything being junk.
+- Flips the catch reveal to count the gold down, with a red "cursed" look: red counter and particles, the rarity backdrop tinted toward red, and a lower, darker draining sound.
+- Rewords the chat line for a loss, like `@viewer you caught ... but it cost you 300 gold!`.
+- Clamps a player's gold at zero so a big penalty can't push them negative (on by default, can be turned off).
+
+The loss colors, the cursed blend amount, the sound pitch and the penalty cap all live in its config file.
+
+### Achievement Unlocker
+Unlocks Steam achievements for the game with a hotkey. What it does:
+
+- Press F9 to unlock the `Blam!` achievement, the tricky one, by default.
+- Turn on `UnlockAll` in its config and F9 unlocks every achievement instead.
+- Turn on `EnableReset` in its config, then press F10 to relock and clear all achievements and stats.
+
+These are real, account level Steam achievements, not a local save edit, so nothing happens on its own. It's all behind the hotkeys, and both the unlock-all and the reset stay off until you opt in.
 
 ## Install
 
@@ -105,7 +127,7 @@ Run the build script:
 ./scripts/build-release.ps1
 ```
 
-It finds your Steam install automatically, builds the three plugins, and packs the DLLs into a zip under `dist/`. If it can't find the game, pass the path yourself:
+It finds your Steam install automatically, builds the plugins, and packs the DLLs into a zip under `dist/`. If it can't find the game, pass the path yourself:
 
 ```powershell
 ./scripts/build-release.ps1 -GameManagedDir "C:\...\LurkBait Twitch Fishing_Data\Managed"
@@ -116,7 +138,9 @@ It finds your Steam install automatically, builds the three plugins, and packs t
 SHA256 of each plugin DLL in the current release. After downloading, run `Get-FileHash -Algorithm SHA256 <file>` and check it against the matching line here.
 
 ```
-9257d66b339147648c98acb5e33e7a9b040c678aed6b363f203f34183c3b05e1  LurkBait.NoChatbotOutage.dll
-a6e42c30b948b25a6f3f259b1c0080a82126943230af4f11023feaadae73dbfa  LurkBait.StableUserIds.dll
-8f03b54d8c0420ae59039803b29476bd07b296f3bf28cc8f0d01764f472ffbb0  LurkBait.RemoteControl.dll
+eaf4f7db653e421ca1bcbe99822f8fee29362aa94b1f6eb600fee67221ed6c7e  LurkBait.NoChatbotOutage.dll
+aeb1d376bb571769a63c9782540fb1967d8c229bd2ec9150e34dd062185d268a  LurkBait.StableUserIds.dll
+a199e799227e057a25495ae3fd49ab3859069f7c343a113cc237e13fe02d8d7b  LurkBait.RemoteControl.dll
+ea93180e41bd4e522d2961535917482275847aac492f4236c5754b19976aefc7  LurkBait.NegativeCatches.dll
+22d0036e7f345fab467d93cd2eda93a03be51553f24cc46b93e87cb9528ac4d2  LurkBait.AchievementUnlocker.dll
 ```

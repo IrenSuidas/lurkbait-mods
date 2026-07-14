@@ -13,7 +13,7 @@ using UnityEngine.Networking;
 
 namespace LurkBait.StableUserIds
 {
-    // Preserves gold/points across Twitch username changes. Captures the stable user-id
+    // Preserves gold across Twitch username changes. Captures the stable user-id
     // at the fishing path (PushPlayer), so "!fish @target" resolves the target rather than
     // the caster and non-fishers are never recorded, then migrates a viewer's record when
     // their id reappears under a new name. Cannot recover viewers who renamed before the

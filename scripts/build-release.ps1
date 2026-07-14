@@ -10,7 +10,7 @@ downloaded from its official GitHub release and cached in dist/.
 param(
     [string]$GameManagedDir,
     [string]$Version = "1.0.0",
-    [string]$BepInExVersion = "5.4.23.2"
+    [string]$BepInExVersion = "5.4.23.5"
 )
 
 $ErrorActionPreference = "Stop"
@@ -44,11 +44,11 @@ if (-not $GameManagedDir -or -not (Test-Path (Join-Path $GameManagedDir "Assembl
 }
 New-Item -ItemType Directory -Force -Path $dist | Out-Null
 
-# 1) Build all plugins.
-dotnet build (Join-Path $repo "LurkBaitMods.slnx") -c Release -nologo -p:GameManagedDir="$GameManagedDir"
+# 1) Build all plugins. ContinuousIntegrationBuild normalizes embedded source paths so the DLL hashes are reproducible on any machine (so others can verify against the published SHA256SUMS).
+dotnet build (Join-Path $repo "LurkBaitMods.slnx") -c Release -nologo -p:GameManagedDir="$GameManagedDir" -p:ContinuousIntegrationBuild=true
 if ($LASTEXITCODE) { throw "Plugin build failed." }
 
-$names = "NoChatbotOutage", "StableUserIds", "RemoteControl"
+$names = "NoChatbotOutage", "StableUserIds", "RemoteControl", "NegativeCatches", "AchievementUnlocker"
 $dlls = foreach ($n in $names) {
     $dll = Join-Path $repo "src\$n\bin\Release\LurkBait.$n.dll"
     if (-not (Test-Path $dll)) { throw "Missing build output: $dll" }
@@ -72,9 +72,11 @@ Set-Content -Path (Join-Path $pluginsStaging "README.txt") -Encoding UTF8 -Value
 LurkBait plugins (for existing BepInEx installs)
 
 Drop these DLLs into:  <game>\BepInEx\plugins\
-  LurkBait.NoChatbotOutage.dll  - hides the stale "Temporary Chatbot Outage" popup
-  LurkBait.StableUserIds.dll    - keeps gold/points when a viewer changes their Twitch name
-  LurkBait.RemoteControl.dll    - localhost HTTP endpoint to adjust gold from external tools
+  LurkBait.NoChatbotOutage.dll     - hides the stale "Temporary Chatbot Outage" popup
+  LurkBait.StableUserIds.dll       - keeps gold when a viewer changes their Twitch name
+  LurkBait.RemoteControl.dll       - localhost HTTP endpoint to adjust gold from external tools
+  LurkBait.NegativeCatches.dll     - lets a custom catch take gold from the viewer instead of giving it
+  LurkBait.AchievementUnlocker.dll - unlocks Steam achievements on a hotkey (F9 unlock, F10 reset)
 Delete any file to disable that mod. Requires BepInEx 5 (x64) for a Unity Mono game.
 "@
 $pluginsZip = Join-Path $dist "LurkBait-Plugins-v$Version.zip"
@@ -111,7 +113,7 @@ WHAT'S INCLUDED
   BepInEx\plugins\LurkBait.NoChatbotOutage.dll
       Hides the stale "Temporary Chatbot Outage" popup that shows on every launch.
   BepInEx\plugins\LurkBait.StableUserIds.dll
-      Keeps a viewer's gold, points and casts when they change their Twitch username
+      Keeps a viewer's gold and casts when they change their Twitch username
       (tracks their stable numeric Twitch id). Shows an in-game message when it merges
       a rename. Config is generated on first run at
       BepInEx\config\dev.irensuidas.lurkbait.stableuserids.cfg
@@ -120,6 +122,14 @@ WHAT'S INCLUDED
       a player's gold and read the result back. Runs automatically and shows an in-game
       message when it starts. Port and toasts live in
       BepInEx\config\dev.irensuidas.lurkbait.remotecontrol.cfg
+  BepInEx\plugins\LurkBait.NegativeCatches.dll
+      Lets a custom catch have a negative value, so landing it takes gold from the viewer
+      instead of giving it (a red "cursed" reveal and a loss chat line). Colors, sounds and
+      the penalty cap live in BepInEx\config\dev.irensuidas.lurkbait.negativecatches.cfg
+  BepInEx\plugins\LurkBait.AchievementUnlocker.dll
+      Unlocks Steam achievements on a hotkey: F9 unlocks "Blam!" (or all, if UnlockAll is
+      set); F10 resets everything when EnableReset is on. Config is generated at
+      BepInEx\config\dev.irensuidas.lurkbait.achievementunlocker.cfg
   Don't want one of them? Just delete its .dll from BepInEx\plugins\.
 
 INSTALL (one extract)
