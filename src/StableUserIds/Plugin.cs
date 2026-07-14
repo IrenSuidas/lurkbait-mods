@@ -18,10 +18,10 @@ namespace LurkBait.StableUserIds
     // the caster and non-fishers are never recorded, then migrates a viewer's record when
     // their id reappears under a new name. Cannot recover viewers who renamed before the
     // mod first saw them fish (Twitch can't map a released login back to its id).
-    [BepInPlugin(Guid, "LurkBait Stable User IDs", "1.0.0")]
+    [BepInPlugin(PluginGuid, "LurkBait Stable User IDs", "1.0.1")]
     public class Plugin : BaseUnityPlugin
     {
-        public const string Guid = "dev.irensuidas.lurkbait.stableuserids";
+        public const string PluginGuid = "dev.irensuidas.lurkbait.stableuserids";
 
         internal static Plugin Instance;
         internal static ManualLogSource Log;
@@ -42,7 +42,7 @@ namespace LurkBait.StableUserIds
             );
 
             IdMap.Load();
-            new Harmony(Guid).PatchAll(typeof(Plugin).Assembly);
+            new Harmony(PluginGuid).PatchAll(typeof(Plugin).Assembly);
             Log.LogInfo($"Loaded - {IdMap.Count} known id(s) from {IdMap.FilePath}");
 
             if (!backfill.Value)
@@ -134,7 +134,7 @@ namespace LurkBait.StableUserIds
                 && !string.IsNullOrEmpty(t.TwitchClientID);
         }
 
-        private static IEnumerator ResolveLogins(IReadOnlyList<string> logins)
+        private static IEnumerator ResolveLogins(List<string> logins)
         {
             if (AuthReady())
             {
@@ -154,7 +154,7 @@ namespace LurkBait.StableUserIds
                 InFlight.Remove(l);
         }
 
-        private static IEnumerator ResolveByIds(IReadOnlyList<string> ids)
+        private static IEnumerator ResolveByIds(List<string> ids)
         {
             if (!AuthReady())
                 yield break;

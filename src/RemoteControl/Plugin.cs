@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -20,10 +21,10 @@ namespace LurkBait.RemoteControl
     // TcpListener (not HttpListener) is used on purpose: HttpListener sits on Windows
     // HTTP.sys and needs a URL-ACL reservation / elevation, which a Steam game running as
     // a normal user doesn't have. TcpListener + minimal HTTP parsing avoids all of that.
-    [BepInPlugin(Guid, "LurkBait Remote Control", "1.0.0")]
+    [BepInPlugin(PluginGuid, "LurkBait Remote Control", "1.0.1")]
     public class Plugin : BaseUnityPlugin
     {
-        public const string Guid = "dev.irensuidas.lurkbait.remotecontrol";
+        public const string PluginGuid = "dev.irensuidas.lurkbait.remotecontrol";
 
         internal static ManualLogSource Log;
         internal static bool Running;
@@ -61,7 +62,7 @@ namespace LurkBait.RemoteControl
             Running = _server.IsRunning;
 
             // Post an in-game toast right after the game's "connected to Twitch" one.
-            new Harmony(Guid).PatchAll(typeof(Plugin).Assembly);
+            new Harmony(PluginGuid).PatchAll(typeof(Plugin).Assembly);
         }
 
         private void Update() => _server?.DrainMainThread();
@@ -223,7 +224,7 @@ namespace LurkBait.RemoteControl
             }
         }
 
-        private void Execute(Command cmd)
+        private static void Execute(Command cmd)
         {
             var pm = PlayersManager.Instance;
             if (pm == null || pm.Players == null)
@@ -453,6 +454,7 @@ namespace LurkBait.RemoteControl
                     }
 
                     Respond(stream, cmd.Status, cmd.Body);
+                    cmd.Dispose();
                 }
             }
             catch (Exception e)
@@ -483,7 +485,7 @@ namespace LurkBait.RemoteControl
             }
         }
 
-        private static void Respond(Stream stream, HttpStatusCode code, string json)
+        private static void Respond(NetworkStream stream, HttpStatusCode code, string json)
         {
             var body = Encoding.UTF8.GetBytes(json);
             var header =
@@ -527,9 +529,11 @@ namespace LurkBait.RemoteControl
         Set,
     }
 
-    internal sealed class Command
+    internal sealed class Command : IDisposable
     {
         private readonly ManualResetEventSlim _done = new ManualResetEventSlim(false);
+
+        public void Dispose() => _done.Dispose();
 
         public Op Op;
         public string User;
@@ -575,7 +579,10 @@ namespace LurkBait.RemoteControl
                 if (name.Equals("Authorization", StringComparison.OrdinalIgnoreCase))
                     authHeader = value;
                 else if (name.Equals("Content-Length", StringComparison.OrdinalIgnoreCase))
-                    int.TryParse(value, out contentLength);
+                {
+                    if (!int.TryParse(value, out contentLength))
+                        contentLength = 0;
+                }
             }
             if (contentLength > 0 && contentLength <= 1_000_000)
             {
@@ -672,12 +679,12 @@ namespace LurkBait.RemoteControl
                 sb.Append(",\"applied\":").Append(applied.Value);
             if (message != null)
                 Field(sb, "message", message);
-            return sb.Append("}").ToString();
+            return sb.Append('}').ToString();
         }
 
         private static void Field(StringBuilder sb, string key, string value)
         {
-            sb.Append(",\"").Append(key).Append("\":\"").Append(Escape(value)).Append("\"");
+            sb.Append(",\"").Append(key).Append("\":\"").Append(Escape(value)).Append('"');
         }
 
         private static string Escape(string s)
@@ -704,7 +711,8 @@ namespace LurkBait.RemoteControl
                         break;
                     default:
                         if (c < ' ')
-                            sb.Append("\\u").Append(((int)c).ToString("x4"));
+                            sb.Append("\\u")
+                                .Append(((int)c).ToString("x4", CultureInfo.InvariantCulture));
                         else
                             sb.Append(c);
                         break;

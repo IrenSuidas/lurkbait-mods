@@ -3,12 +3,16 @@ using HarmonyLib;
 
 namespace LurkBait.NoChatbotOutage
 {
-    [BepInPlugin(Guid, "LurkBait No Chatbot Outage", "1.0.0")]
+    [BepInPlugin(PluginGuid, "LurkBait No Chatbot Outage", "1.0.1")]
     public class Plugin : BaseUnityPlugin
     {
-        public const string Guid = "dev.irensuidas.lurkbait.nochatbotoutage";
+        public const string PluginGuid = "dev.irensuidas.lurkbait.nochatbotoutage";
 
-        private void Awake() => new Harmony(Guid).PatchAll(typeof(Plugin).Assembly);
+        private void Awake()
+        {
+            new Harmony(PluginGuid).PatchAll(typeof(Plugin).Assembly);
+            Logger.LogInfo("Loaded - hiding the stale chatbot outage popup.");
+        }
     }
 
     // Every announcement funnels through PushAnnouncement, skip only the stale outage box.
