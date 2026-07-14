@@ -1,0 +1,22 @@
+# EditorConfig — https://editorconfig.org
+# Single source of style for the repo. CSharpier reads indent_style/indent_size/max_line_length/
+# end_of_line from here (see https://csharpier.com/docs/Configuration); the .NET analyzers enabled
+# in src/Directory.Build.props read the same file for whitespace, style and naming rules.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.cs]
+indent_size = 4
+# Matches CSharpier's printWidth (default 100). CSharpier owns line wrapping.
+max_line_length = 100
+
+# Project/manifest files use 2-space indent.
+[*.{json,csproj,props,targets,slnx,yml,yaml}]
+indent_size = 2
