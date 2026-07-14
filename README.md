@@ -138,9 +138,9 @@ It finds your Steam install automatically, builds the plugins, and packs the DLL
 SHA256 of each plugin DLL in the current release. After downloading, run `Get-FileHash -Algorithm SHA256 <file>` and check it against the matching line here.
 
 ```
-eaf4f7db653e421ca1bcbe99822f8fee29362aa94b1f6eb600fee67221ed6c7e  LurkBait.NoChatbotOutage.dll
-aeb1d376bb571769a63c9782540fb1967d8c229bd2ec9150e34dd062185d268a  LurkBait.StableUserIds.dll
-a199e799227e057a25495ae3fd49ab3859069f7c343a113cc237e13fe02d8d7b  LurkBait.RemoteControl.dll
-ea93180e41bd4e522d2961535917482275847aac492f4236c5754b19976aefc7  LurkBait.NegativeCatches.dll
-22d0036e7f345fab467d93cd2eda93a03be51553f24cc46b93e87cb9528ac4d2  LurkBait.AchievementUnlocker.dll
+4910d0314513013add20a57640e24c4fd9de6c7057307070f6acae68a2f35873  LurkBait.NoChatbotOutage.dll
+b7426bf7aff0eb6c182928637147b9319d4abe2a19a0560681c1808ac357a3fa  LurkBait.StableUserIds.dll
+2648eaf13636fa99e9fc73f7a2d704d8ec10b90d2294c420607fb2b650c03d36  LurkBait.RemoteControl.dll
+4256b456c7bfd4f2a78b2721d36f6bd7277811f329ef9ca6f053a27b9af6b2f6  LurkBait.NegativeCatches.dll
+6f2f25a9ad2b3c567f96e4617fd566654210af06ee1e652127aaed99b582c906  LurkBait.AchievementUnlocker.dll
 ```
