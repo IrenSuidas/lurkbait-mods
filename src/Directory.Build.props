@@ -8,6 +8,8 @@
     <AnalysisLevel>10-recommended</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <GameManagedDir Condition="'$(GameManagedDir)' == ''">
       C:\Program Files (x86)\Steam\steamapps\common\LurkBait Twitch Fishing\LurkBait Twitch Fishing_Data\Managed
     </GameManagedDir>
