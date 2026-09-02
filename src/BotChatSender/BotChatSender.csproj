@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>LurkBait.BotChatSender</AssemblyName>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reads the live Twitch client id and broadcaster id off the game's connector (GetUsers). -->
+    <Reference Include="StreamLinked">
+      <HintPath>$(GameManagedDir)\StreamLinked.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- JSON for the Twitch OAuth and Helix payloads (ships with the game). -->
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(GameManagedDir)\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- UnityWebRequest for the Twitch OAuth device flow and the Helix send. -->
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- Clones the settings-panel login button (Button) and sets its label (TextMeshProUGUI). -->
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(GameManagedDir)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(GameManagedDir)\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

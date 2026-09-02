@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>LurkBait.TwitchWatchdog</AssemblyName>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <!-- The Twitch connection lives in the bundled third-party StreamLinked asset; we poll its
+       public state and call its public reconnect entry points. -->
+  <ItemGroup>
+    <Reference Include="StreamLinked">
+      <HintPath>$(GameManagedDir)\StreamLinked.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

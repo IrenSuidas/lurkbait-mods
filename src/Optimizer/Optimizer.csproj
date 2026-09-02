@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>LurkBait.Optimizer</AssemblyName>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reaches the IRC client's chat backlog to clear it. -->
+    <Reference Include="StreamLinked">
+      <HintPath>$(GameManagedDir)\StreamLinked.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- Profiler memory APIs for the diagnostics log. -->
+    <Reference Include="UnityEngine.ProfilerModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.ProfilerModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- GifLoader carries a RawImage field, so its metadata needs the UI assembly. -->
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(GameManagedDir)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>
