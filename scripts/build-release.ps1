@@ -48,7 +48,7 @@ New-Item -ItemType Directory -Force -Path $dist | Out-Null
 dotnet build (Join-Path $repo "LurkBaitMods.slnx") -c Release -nologo -p:GameManagedDir="$GameManagedDir" -p:ContinuousIntegrationBuild=true
 if ($LASTEXITCODE) { throw "Plugin build failed." }
 
-$names = "NoChatbotOutage", "StableUserIds", "RemoteControl", "NegativeCatches", "AchievementUnlocker"
+$names = "NoChatbotOutage", "StableUserIds", "RemoteControl", "NegativeCatches", "AchievementUnlocker", "BotChatSender", "TwitchWatchdog", "Optimizer"
 $dlls = foreach ($n in $names) {
     $dll = Join-Path $repo "src\$n\bin\Release\LurkBait.$n.dll"
     if (-not (Test-Path $dll)) { throw "Missing build output: $dll" }
@@ -77,6 +77,9 @@ Drop these DLLs into:  <game>\BepInEx\plugins\
   LurkBait.RemoteControl.dll       - localhost HTTP endpoint to adjust gold from external tools
   LurkBait.NegativeCatches.dll     - lets a custom catch take gold from the viewer instead of giving it
   LurkBait.AchievementUnlocker.dll - unlocks Steam achievements on a hotkey (F9 unlock, F10 reset)
+  LurkBait.BotChatSender.dll       - sends LurkBait chat from a separate bot account
+  LurkBait.TwitchWatchdog.dll      - reconnects the Twitch connection after a stall or drop
+  LurkBait.Optimizer.dll           - frees leaked GIF textures and clears the chat backlog
 Delete any file to disable that mod. Requires BepInEx 5 (x64) for a Unity Mono game.
 "@
 $pluginsZip = Join-Path $dist "LurkBait-Plugins-v$Version.zip"
@@ -130,6 +133,16 @@ WHAT'S INCLUDED
       Unlocks Steam achievements on a hotkey: F9 unlocks "Blam!" (or all, if UnlockAll is
       set); F10 resets everything when EnableReset is on. Config is generated at
       BepInEx\config\dev.irensuidas.lurkbait.achievementunlocker.cfg
+  BepInEx\plugins\LurkBait.BotChatSender.dll
+      Sends LurkBait's chat (catch announcements, leaderboard replies) from a separate bot
+      account. Connect one from the game's Settings panel. With no bot connected, messages
+      send from your main account like normal.
+  BepInEx\plugins\LurkBait.TwitchWatchdog.dll
+      Reconnects the Twitch connection (points/bits/subs and chat) after a silent stall or
+      drop that the game never recovers from on long sessions. Works as soon as it's installed.
+  BepInEx\plugins\LurkBait.Optimizer.dll
+      Frees the GIF frame textures the game leaks and clears the chat backlog it keeps
+      forever. Toggles live in BepInEx\config\dev.irensuidas.lurkbait.optimizer.cfg
   Don't want one of them? Just delete its .dll from BepInEx\plugins\.
 
 INSTALL (one extract)
