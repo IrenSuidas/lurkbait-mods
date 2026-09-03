@@ -3,23 +3,20 @@ using System;
 namespace LurkBait.TwitchWatchdog
 {
     // Per-connection decision logic: tracks a "down episode" so logging stays clean (one line down,
-    // periodic while down, one line on recovery) and gates reconnects behind exponential backoff.
-    // Evaluate returns true when the caller should perform the reconnect now. Main-thread only.
+    // one line on recovery) and gates reconnects behind exponential backoff. Evaluate returns true when
+    // the caller should perform the reconnect now. Main-thread only.
     internal sealed class ConnectionWatch
     {
-        private const double ObserveLogEverySeconds = 30;
-
         private readonly string _name;
         private bool _down;
         private int _failCount;
         private DateTime _downSince;
         private DateTime _lastAttempt = DateTime.MinValue;
-        private DateTime _lastObserveLog;
 
         public ConnectionWatch(string name) => _name = name;
 
         // reason == null means healthy.
-        public bool Evaluate(string reason, bool autoReconnect, float baseBackoff, float maxBackoff)
+        public bool Evaluate(string reason, float baseBackoff, float maxBackoff)
         {
             var now = DateTime.UtcNow;
 
@@ -39,22 +36,8 @@ namespace LurkBait.TwitchWatchdog
             {
                 _down = true;
                 _downSince = now;
-                _lastObserveLog = now;
                 _failCount = 0;
                 Plugin.Log.LogWarning($"{_name} appears DOWN: {reason}.");
-            }
-
-            if (!autoReconnect)
-            {
-                if ((now - _lastObserveLog).TotalSeconds >= ObserveLogEverySeconds)
-                {
-                    _lastObserveLog = now;
-                    Plugin.Log.LogWarning(
-                        $"[observe] {_name} still down after {(now - _downSince).TotalSeconds:F0}s: "
-                            + $"{reason} (AutoReconnect is off)."
-                    );
-                }
-                return false;
             }
 
             double delay = Math.Min(baseBackoff * Math.Pow(2, _failCount), maxBackoff);

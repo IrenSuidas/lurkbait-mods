@@ -15,7 +15,7 @@ namespace LurkBait.TwitchWatchdog
     // The bundled StreamLinked asset never reconnects after a mid-session drop or silent stall, so
     // long streams quietly stop responding to chat, points and subs. This watches both connections'
     // public state plus a liveness clock and, when one looks dead, calls the reconnect entry points
-    // the game leaves unused. Defaults to observe-only so a session can be captured first.
+    // the game leaves unused.
     [BepInPlugin(PluginGuid, "LurkBait Twitch Watchdog", "1.0.0")]
     public class Plugin : BaseUnityPlugin
     {
@@ -23,7 +23,6 @@ namespace LurkBait.TwitchWatchdog
 
         internal static ManualLogSource Log;
 
-        private ConfigEntry<bool> _autoReconnect;
         private ConfigEntry<bool> _superviseEventSub;
         private ConfigEntry<bool> _superviseIrc;
         private ConfigEntry<float> _checkInterval;
@@ -40,13 +39,6 @@ namespace LurkBait.TwitchWatchdog
         {
             Log = Logger;
 
-            _autoReconnect = Config.Bind(
-                "General",
-                "AutoReconnect",
-                false,
-                "Off (default): observe only - log when a connection looks dead but don't touch it. "
-                    + "On: actually reconnect. Run a session observe-only first to confirm, then enable."
-            );
             _superviseEventSub = Config.Bind(
                 "General",
                 "SuperviseEventSub",
@@ -109,8 +101,7 @@ namespace LurkBait.TwitchWatchdog
 
             new Harmony(PluginGuid).PatchAll(typeof(Plugin).Assembly);
             Log.LogInfo(
-                $"Loaded - {(_autoReconnect.Value ? "AUTO-RECONNECT active" : "observe-only")}; "
-                    + $"watching {(_superviseEventSub.Value ? "EventSub " : "")}{(_superviseIrc.Value ? "IRC" : "")}".Trim()
+                $"Loaded - watching {(_superviseEventSub.Value ? "EventSub " : "")}{(_superviseIrc.Value ? "IRC" : "")}".Trim()
             );
         }
 
@@ -156,7 +147,7 @@ namespace LurkBait.TwitchWatchdog
                 : stalled ? $"no message for {silence:F0}s (keepalive expected ~10s)"
                 : null;
 
-            if (_es.Evaluate(reason, _autoReconnect.Value, _baseBackoff.Value, _maxBackoff.Value))
+            if (_es.Evaluate(reason, _baseBackoff.Value, _maxBackoff.Value))
             {
                 // Fire-and-forget, but exceptions are observed/logged inside, so the task never
                 // faults unobserved. Only the long-lived singleton is captured.
@@ -194,7 +185,7 @@ namespace LurkBait.TwitchWatchdog
                 : stalled ? $"no inbound line for {silence:F0}s (PING expected ~5min)"
                 : null;
 
-            if (_irc.Evaluate(reason, _autoReconnect.Value, _baseBackoff.Value, _maxBackoff.Value))
+            if (_irc.Evaluate(reason, _baseBackoff.Value, _maxBackoff.Value))
                 irc.ReconnectToTwitch(); // just enqueues a main-thread reconnect
         }
 

@@ -1,6 +1,6 @@
 # LurkBait Twitch Fishing - Mods
 
-Five small BepInEx plugins for LurkBait Twitch Fishing.
+Eight small BepInEx plugins for LurkBait Twitch Fishing.
 They're independent, so install any combination. None of them touch the game's own files, BepInEx just loads them at startup. Delete a plugin's DLL to turn it off.
 
 ## Contents
@@ -11,6 +11,9 @@ They're independent, so install any combination. None of them touch the game's o
   - [Remote Control](#remote-control)
   - [Negative Catches](#negative-catches)
   - [Achievement Unlocker](#achievement-unlocker)
+  - [Bot Chat Sender](#bot-chat-sender)
+  - [Twitch Watchdog](#twitch-watchdog)
+  - [Optimizer](#optimizer)
 - [Install](#install)
 - [Existing data & the Twitch limitation](#existing-data--the-twitch-limitation)
 - [Remote Control endpoints](#remote-control-endpoints)
@@ -64,6 +67,29 @@ Unlocks Steam achievements for the game with a hotkey. What it does:
 - Turn on `EnableReset` in its config, then press F10 to relock and clear all achievements and stats.
 
 These are real, account level Steam achievements, not a local save edit, so nothing happens on its own. It's all behind the hotkeys, and both the unlock-all and the reset stay off until you opt in.
+
+### Bot Chat Sender
+Sends LurkBait's chat messages (catch announcements, leaderboard replies) from a separate bot account instead of your own. The game had this, but the dev disabled it when Twitch changed its API. What it does:
+
+- Adds a "Connect bot account" button to the game's Settings panel.
+- Signs the bot in with Twitch's device-code flow (open a page, enter a code), then saves and refreshes the token across sessions.
+- Sends through the bot on Twitch's current API. With no bot connected, messages send from your main account like normal.
+
+### Twitch Watchdog
+Reconnects the Twitch connection after a silent stall or drop, which the game otherwise never recovers from during long sessions. What it does:
+
+- Watches both the EventSub connection (points, bits, subs) and the IRC/chat connection.
+- Spots a dead connection by its state and by how long it has gone silent.
+- Reconnects it automatically, with backoff so it never hammers Twitch.
+
+### Optimizer
+One plugin for LurkBait's memory and performance. What it does:
+
+- Frees the GIF frame textures the game leaks when custom-catch GIFs load and unload.
+- Periodically clears the chat backlog the connection keeps forever but never reads.
+- Optional memory logging for diagnosis, off by default.
+
+Each part can be turned off in its config.
 
 ## Install
 
@@ -138,9 +164,12 @@ It finds your Steam install automatically, builds the plugins, and packs the DLL
 SHA256 of each plugin DLL in the current release. After downloading, run `Get-FileHash -Algorithm SHA256 <file>` and check it against the matching line here.
 
 ```
-9aa40d1cf28c47d4459ada5a2f58dece39fdcdc9a9217c6e5c34b4b709409cb7  LurkBait.NoChatbotOutage.dll
-ffc2bb697730e1e461c1c67db4beb45752303120d064fd76b503c4ab0758408f  LurkBait.StableUserIds.dll
-19d5f0c5ab6e051854b19ad617903fbb14949a4f7d7798f40a62b606a17bebd2  LurkBait.RemoteControl.dll
-85c3bff253855f354a7045b5fd98850369c4a0ea0edf06be8043fa7995c7e3a7  LurkBait.NegativeCatches.dll
-8c373af880b947901d42996f950af9ea621be34177c025fc6c0e43b4e50b90ad  LurkBait.AchievementUnlocker.dll
+a94179f11bae8f8b7153db752167dc56d258358588ea2c91b4a05b85f29804f0  LurkBait.NoChatbotOutage.dll
+6cfad4eddf9e7f5bae39470d73a810f4875b366bb818890e4ea9a6abded07db4  LurkBait.StableUserIds.dll
+bfe1d8978fe9368d2554d0a1028eb10c82e6447b80dce531016299eaacdc0da2  LurkBait.RemoteControl.dll
+1d79c38984f145ac8e54e2facc3c42a3ed7be5f991142d78fa3a926cdd934306  LurkBait.NegativeCatches.dll
+141a3b6733ca05ac9251ec33993d2de8875ebc50769f7fe44cca848e5cf4e762  LurkBait.AchievementUnlocker.dll
+eabef4d7c5c3553635017450d6349638c9f9e96e403ddc466b85420e77b6f8ef  LurkBait.BotChatSender.dll
+a4a7172a879c6c9dcad80b9686f40d734ff87edcf250247ad93a66e28635f647  LurkBait.TwitchWatchdog.dll
+b7c87aac1c1f5e68c6d4d753dd663d0c7f93a955dfd5e0db6c42a841d3c39f71  LurkBait.Optimizer.dll
 ```
