@@ -16,6 +16,7 @@ namespace LurkBait.BotChatSender
     public class Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "dev.irensuidas.lurkbait.botchatsender";
+        private const string ClientId = "9rwqv1krfj4mo851fqwjirtfgqvqzs";
 
         private const string BotButtonName = "BotChatSenderLoginButton";
 
@@ -43,8 +44,7 @@ namespace LurkBait.BotChatSender
                 "Route LurkBait's outgoing chat through the bot account once it is signed in. When off - "
                     + "or before a bot signs in - messages send from your main account like vanilla."
             );
-
-            _client = new BotChatClient(this);
+            _client = new BotChatClient(this, ClientId);
             _client.LoadStoredToken();
 
             new Harmony(PluginGuid).PatchAll(typeof(Plugin).Assembly);

@@ -9,9 +9,10 @@ using UnityEngine.Networking;
 
 namespace LurkBait.BotChatSender
 {
-    // Owns the bot account's Twitch OAuth token (device-code grant, no client secret) and sends chat as
-    // the bot via Helix. The game's client id and broadcaster id are read live off
-    // TwitchConnectorEventSub. All web work runs as Unity coroutines on the main thread.
+    // Owns the bot account's Twitch OAuth token (device-code grant) and sends chat as the bot via Helix.
+    // The client id is a public app supplied by config, so tokens refresh without a secret and the login
+    // persists. The broadcaster id is read live off TwitchConnectorEventSub. All web work runs as Unity
+    // coroutines on the main thread.
     internal sealed class BotChatClient
     {
         private const string Scope = "user:write:chat";
@@ -26,6 +27,7 @@ namespace LurkBait.BotChatSender
 
         private readonly MonoBehaviour _host;
         private readonly string _tokenPath;
+        private readonly string _clientId;
 
         private string _accessToken;
         private string _refreshToken;
@@ -37,9 +39,10 @@ namespace LurkBait.BotChatSender
         private bool _refreshInProgress;
         private string _status = "not logged in";
 
-        public BotChatClient(MonoBehaviour host)
+        public BotChatClient(MonoBehaviour host, string clientId)
         {
             _host = host;
+            _clientId = clientId;
             _tokenPath = Path.Combine(Paths.ConfigPath, TokenFileName);
         }
 
@@ -65,6 +68,8 @@ namespace LurkBait.BotChatSender
                     File.ReadAllText(_tokenPath)
                 );
                 if (stored == null || string.IsNullOrEmpty(stored.refresh_token))
+                    return;
+                if (stored.client_id != _clientId)
                     return;
                 _accessToken = stored.access_token;
                 _refreshToken = stored.refresh_token;
@@ -125,11 +130,10 @@ namespace LurkBait.BotChatSender
         {
             if (!Ready)
                 return false;
-            string clientId = GameClientId();
             string broadcasterId = GameBroadcasterId();
-            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(broadcasterId))
+            if (string.IsNullOrEmpty(_clientId) || string.IsNullOrEmpty(broadcasterId))
                 return false;
-            _host.StartCoroutine(SendRoutine(clientId, broadcasterId, message));
+            _host.StartCoroutine(SendRoutine(_clientId, broadcasterId, message));
             return true;
         }
 
@@ -176,13 +180,12 @@ namespace LurkBait.BotChatSender
             _authInProgress = true;
             try
             {
-                string clientId = GameClientId();
+                string clientId = _clientId;
                 if (string.IsNullOrEmpty(clientId))
                 {
-                    _status = "waiting for the game's Twitch login";
+                    _status = "no client id configured";
                     Plugin.Log.LogWarning(
-                        "Cannot start bot login yet: the game isn't connected to Twitch (no client id). "
-                            + "Log into Twitch in-game first, then try again from Settings."
+                        "Cannot start bot login: no Twitch client id is configured."
                     );
                     yield break;
                 }
@@ -299,7 +302,7 @@ namespace LurkBait.BotChatSender
             _refreshInProgress = true;
             try
             {
-                string clientId = GameClientId();
+                string clientId = _clientId;
                 if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(_refreshToken))
                     yield break;
 
@@ -395,6 +398,7 @@ namespace LurkBait.BotChatSender
                     ).ToUnixTimeSeconds(),
                     user_id = _botUserId,
                     login = _botLogin,
+                    client_id = _clientId,
                 };
                 File.WriteAllText(_tokenPath, JsonConvert.SerializeObject(stored));
             }
@@ -422,18 +426,6 @@ namespace LurkBait.BotChatSender
             catch (Exception e)
             {
                 Plugin.Log.LogWarning("Could not show the bot login dialog: " + e.Message);
-            }
-        }
-
-        private static string GameClientId()
-        {
-            try
-            {
-                return TwitchConnectorEventSub.Instance?.TwitchClientID;
-            }
-            catch
-            {
-                return null;
             }
         }
 
@@ -512,6 +504,7 @@ namespace LurkBait.BotChatSender
             public long expires_at_unix { get; set; }
             public string user_id { get; set; }
             public string login { get; set; }
+            public string client_id { get; set; }
         }
 
         private sealed class DeviceResp
